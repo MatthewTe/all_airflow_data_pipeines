@@ -1,0 +1,5 @@
+dash 
+pandas 
+dash-ag-grid
+dash-bootstrap-components
+SQLAlchemy
