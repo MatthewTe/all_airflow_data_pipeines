@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 from ag_grid import generate_ag_grid
 import dash_ag_grid as dag
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 
 app.layout = html.Div([
 
@@ -26,8 +26,13 @@ app.layout = html.Div([
             style={'padding': '1rem'}
         )),
 
-        dbc.Col(html.Div(id='classification_inputs_parent'))
+        dbc.Col(html.Div(id='classification_inputs_parent')),
+    ]),
+
+    dbc.Row([
+        dbc.Col()
     ])
+
 ])
 
 if __name__ == '__main__':
