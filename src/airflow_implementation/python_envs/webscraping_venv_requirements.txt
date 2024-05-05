@@ -1,0 +1,8 @@
+
+requests
+sqlalchemy
+beautifulsoup4
+pandas
+psycopg2-binary
+psycopg2
+apache-airflow==2.9.0
