@@ -6,6 +6,16 @@ import sqlite3
 
 dotenv.load_dotenv('./airflow_implementation/.env')
 
+DB_USER = os.environ.get('POSTGRES_USER')
+DB_PASSWORD = os.environ.get('POSTGRES_PASSWORD').encode('utf-8').decode('utf-8')
+DB_NAME = os.environ.get('POSTGRES_DB')
+
+db_uri = r"postgresql+psycopg2://{0}:{1}@10.0.0.85/{2}".format(
+    DB_USER, DB_PASSWORD, DB_NAME
+)
+
+print(db_uri)
+
 
 def migrate_sqlite_to_psql():
     DB_USER = os.environ.get('POSTGRES_USER')

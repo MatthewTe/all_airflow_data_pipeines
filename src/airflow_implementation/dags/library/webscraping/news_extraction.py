@@ -65,11 +65,11 @@ def process_loop_page(query_param_str: str, db_url: str):
     else:
 
         # Checking the articles against existing articles in the db:
-        article_titles: tuple[str] = tuple([article['title'] for article in page_content['articles']])
+        article_url: tuple[str] = tuple([article['url'] for article in page_content['articles']])
         
         with LocalDevEngine.connect() as conn, conn.begin():
 
-            unique_title_query = sa.text(f'SELECT title FROM articles WHERE title IN {article_titles}')
+            unique_title_query = sa.text(f'SELECT url FROM articles WHERE url IN {article_url}')
 
             existing_articles = [
                 row[0] for row in conn.execute(
@@ -78,7 +78,7 @@ def process_loop_page(query_param_str: str, db_url: str):
                 )
             ]
 
-            unique_articles = [article for article in page_content['articles'] if article["title"] not in existing_articles]
+            unique_articles = [article for article in page_content['articles'] if article["url"] not in existing_articles]
 
         if len(unique_articles) == 0:
             print("No unique articles found. Reached end of dataset. Stopping....")
