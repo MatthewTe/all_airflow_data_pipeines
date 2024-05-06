@@ -142,7 +142,7 @@ def process_loop_page(query_param_str: str, db_url: str):
                     print("Error in inserting records into the database.")
                     wal_df = pd.DataFrame.from_records(articles_to_insert)
                     wal_df.to_csv("wal_errored.csv")
-                    print(e.with_traceback())
+                    print(e.with_traceback(None))
                     raise e 
 
                 time.sleep(random.choice(range(1, 5)))
