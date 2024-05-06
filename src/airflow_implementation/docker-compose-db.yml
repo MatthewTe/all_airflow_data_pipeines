@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres-main:
     image: postgres:13
     env_file:
       - .env
