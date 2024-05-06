@@ -8,7 +8,7 @@ services:
     volumes:
       - postgres-main-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-U", "tt_data"]
       interval: 10s
       retries: 5
       start_period: 5s
