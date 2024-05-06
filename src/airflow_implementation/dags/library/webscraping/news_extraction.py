@@ -128,7 +128,7 @@ def process_loop_page(query_param_str: str, db_url: str):
             with LocalDevEngine.connect() as conn, conn.begin():
                 try:
                     insert_query = sa.text("""
-                        INSERT OR REPLACE INTO articles 
+                        INSERT INTO articles 
                             (id, title, url, type, content, source, extracted_date, published_date)
                         VALUES 
                             (:id, :title, :url, :type, :content, :source, :extracted_date, :published_date)
