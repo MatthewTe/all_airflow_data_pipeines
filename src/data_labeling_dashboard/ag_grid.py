@@ -31,7 +31,6 @@ def generate_ag_grid(_) -> dag.AgGrid:
         conn.execute(sa.text(
             """ CREATE TABLE IF NOT EXISTS article_labels (
                 id TEXT PRIMARY KEY,
-                region TEXT,
                 road TEXT
             )
             """
