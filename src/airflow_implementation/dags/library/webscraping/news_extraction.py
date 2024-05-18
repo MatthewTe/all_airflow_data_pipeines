@@ -13,7 +13,7 @@ import uuid
 import pandas as pd 
 import random
 
-from html_parsing import extract_article_content, extract_articles_display_page
+from .html_parsing import extract_article_content, extract_articles_display_page
 
 class LoopPageConfig(TypedDict):
     db_url: str
