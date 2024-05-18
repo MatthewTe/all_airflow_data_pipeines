@@ -9,20 +9,5 @@ services:
       - postgres-main-db-volume:/var/lib/postgresql/data
     restart: always
 
-  neo4j:
-    image: neo4j:latest
-    container_name: 'devneo4j'
-    volumes:
-      - '$HOME/neo4j/data:/data'
-      - '$HOME/neo4j/conf/:/conf/'
-    ports:
-      - 7474:7474
-      - 7687:7687
-    restart: on-failure
-    command: neo4j
-
-
-
-
 volumes:
   postgres-main-db-volume:
