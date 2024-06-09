@@ -8,7 +8,6 @@ from airflow.models.dag import DAG
 # Operators; we need this to operate!
 from airflow.decorators import task
 from airflow.models import Variable
-from airflow.operators import BashOperator
 
 with DAG(
     "extracting_combat_footage_subreddit_metadata",
@@ -18,9 +17,9 @@ with DAG(
     catchup=False,
     tags=['reddit', 'combat_footage', 'metadata', 'subreddit']
 ) as dag:
-    
-    run_subreddit_ingestion_task = BashOperator(
-        task_id='combat_footage_subreddit_jar',
-        bash_command = 'echo Hello World'
-    )
 
+    @task.bash
+    def run_subreddit_ingestion_task() -> str:
+        return "echo Hello World"
+
+    run_subreddit_ingestion_task()
