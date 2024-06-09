@@ -15,7 +15,18 @@ import random
 
 from .html_parsing import extract_article_content, extract_articles_display_page
 
-def process_loop_page(query_param_str: str, db_url: str):
+class LoopPageConfig(TypedDict):
+    db_url: str
+    query_param_str: str
+    article_category: str
+    db_category: str
+
+def process_loop_page(config: LoopPageConfig):
+
+    db_url = config['db_url']   
+    query_param_str = config['query_param_str']
+    article_category =  config['article_category']
+    db_category = config['db_category']
 
     LocalDevEngine: sa.engine.Engine = sa.create_engine(db_url)
     with LocalDevEngine.connect() as conn, conn.begin():
@@ -39,7 +50,7 @@ def process_loop_page(query_param_str: str, db_url: str):
         {"User-Agent":'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'},
         {"User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'}
     ]
-    base_url = 'https://tt.loopnews.com/category/looptt-crime'
+    base_url = f'https://tt.loopnews.com/category/{article_category}'
     article_base_url = 'https://tt.loopnews.com'
     query_params = parse_qs(query_param_str.lstrip("?"))
 
@@ -65,11 +76,11 @@ def process_loop_page(query_param_str: str, db_url: str):
     else:
 
         # Checking the articles against existing articles in the db:
-        article_titles: tuple[str] = tuple([article['title'] for article in page_content['articles']])
+        article_url: tuple[str] = tuple([article['url'] for article in page_content['articles']])
         
         with LocalDevEngine.connect() as conn, conn.begin():
 
-            unique_title_query = sa.text(f'SELECT title FROM articles WHERE title IN {article_titles}')
+            unique_title_query = sa.text(f'SELECT url FROM articles WHERE url IN {article_url}')
 
             existing_articles = [
                 row[0] for row in conn.execute(
@@ -78,7 +89,7 @@ def process_loop_page(query_param_str: str, db_url: str):
                 )
             ]
 
-            unique_articles = [article for article in page_content['articles'] if article["title"] not in existing_articles]
+            unique_articles = [article for article in page_content['articles'] if article["url"] not in existing_articles]
 
         if len(unique_articles) == 0:
             print("No unique articles found. Reached end of dataset. Stopping....")
@@ -109,7 +120,7 @@ def process_loop_page(query_param_str: str, db_url: str):
                 "id": str(unique_url_hash),
                 "title": single_artice_content['title'],
                 "url": article["url"],
-                "type": "crime",
+                "type": config["db_category"],
                 "content": single_artice_content["content"],
                 "source": "https://tt.loopnews.com",
                 "extracted_date": article_extracted_date,
@@ -128,7 +139,7 @@ def process_loop_page(query_param_str: str, db_url: str):
             with LocalDevEngine.connect() as conn, conn.begin():
                 try:
                     insert_query = sa.text("""
-                        INSERT OR REPLACE INTO articles 
+                        INSERT INTO articles 
                             (id, title, url, type, content, source, extracted_date, published_date)
                         VALUES 
                             (:id, :title, :url, :type, :content, :source, :extracted_date, :published_date)
@@ -142,7 +153,7 @@ def process_loop_page(query_param_str: str, db_url: str):
                     print("Error in inserting records into the database.")
                     wal_df = pd.DataFrame.from_records(articles_to_insert)
                     wal_df.to_csv("wal_errored.csv")
-                    print(e.with_traceback())
+                    print(e.with_traceback(None))
                     raise e 
 
                 time.sleep(random.choice(range(1, 5)))
@@ -152,4 +163,44 @@ def process_loop_page(query_param_str: str, db_url: str):
                 return 
             
 
-            process_loop_page(query_param_str=page_content['next_page'], db_url=db_url)
+            new_config: LoopPageConfig = {
+                'article_category': article_category,
+                'db_category': db_category,
+                'db_url': db_url,
+                'query_param_str': page_content['next_page']
+            }
+
+            process_loop_page(new_config)
+
+
+if __name__ == "__main__":
+
+    # Basic tests:
+    '''
+
+    db_url = ''
+
+    crime_config: LoopPageConfig = {
+        "query_param_str": '?page=0',
+        "article_category": "looptt-crime",
+        'db_category': "crime",
+        'db_url':db_url
+    }
+    process_loop_page(crime_config)   
+
+    politics_config: LoopPageConfig = {
+    "query_param_str": '?page=170',
+        "article_category": "looptt-politics",
+        'db_category': "politics",
+        'db_url':db_url
+    }
+    process_loop_page(politics_config)   
+
+    carribean_config: LoopPageConfig = {
+        "query_param_str": '?page=250',
+        "article_category": "looptt-caribbean-news",
+        'db_category': "caribbean-news",
+        'db_url':db_url
+    }
+    process_loop_page(carribean_config)   
+    '''

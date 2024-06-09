@@ -163,3 +163,4 @@ cython_debug/
 
 *airflow
 *logs
+*_venv
