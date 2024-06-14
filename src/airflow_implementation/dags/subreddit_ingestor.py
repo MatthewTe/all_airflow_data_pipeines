@@ -20,6 +20,6 @@ with DAG(
 
     @task.bash
     def run_subreddit_ingestion_task() -> str:
-        return "echo Hello World"
+        return "java -jar /opt/airflow/dags/jarfiles/reddit_label-1.0-SNAPSHOT.jar s=CombatFootage"
 
     run_subreddit_ingestion_task()

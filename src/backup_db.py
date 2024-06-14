@@ -4,7 +4,7 @@ import sys
 import pathlib
 import datetime
 
-DATABASE_NAMES = ['tt_data', 'articles_dev']
+DATABASE_NAMES = ['tt_data', 'articles_dev', 'articles_prod']
 
 if __name__ == '__main__':
 
