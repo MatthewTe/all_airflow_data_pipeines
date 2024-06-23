@@ -9,5 +9,20 @@ services:
       - postgres-main-db-volume:/var/lib/postgresql/data
     restart: always
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"    
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
 volumes:
   postgres-main-db-volume:
+  minio_data:
+    driver: local
+
